@@ -1,5 +1,11 @@
 # JSON ⇄ TOON Converter
 
+[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://convert2toon.vercel.app)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![React](https://img.shields.io/badge/React-18.x-61dafb)](https://reactjs.org/)
+
+**[Live Demo: convert2toon.vercel.app](https://convert2toon.vercel.app)**
+
 A web-based converter for transforming JSON data to the TOON format and vice versa. Built with React and Monaco Editor.
 
 ## Features
