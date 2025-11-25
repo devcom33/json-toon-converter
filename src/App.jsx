@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import Editor from "@monaco-editor/react";
+import React, { useState, lazy, Suspense } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import "./index.css";
 import { encode, decode } from "@toon-format/toon";
+
+const Editor = lazy(() => import("@monaco-editor/react"));
 
 class TokenCounter {
   static count(text) {
@@ -18,8 +19,14 @@ class TokenCounter {
   }
 }
 
+const EditorSkeleton = () => (
+  <div className="h-[400px] bg-gray-700 rounded animate-pulse flex items-center justify-center">
+    <p className="text-gray-400">Loading editor...</p>
+  </div>
+);
+
 function App() {
-  const [inputMode, setInputMode] = useState("json"); // 'json' or 'toon'
+  const [inputMode, setInputMode] = useState("json");
   const [inputValue, setInputValue] = useState(
     '{\n  "name": "John",\n  "age": 30\n}'
   );
@@ -58,9 +65,13 @@ function App() {
     toast.success("Input and output swapped!");
   };
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(outputValue);
-    toast.success("Copied to clipboard!");
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(outputValue);
+      toast.success("Copied to clipboard!");
+    } catch (err) {
+      toast.error("Failed to copy to clipboard");
+    }
   };
 
   const handleDownload = () => {
@@ -139,20 +150,23 @@ function App() {
                 Swap ⇄
               </button>
             </div>
-            <Editor
-              height="400px"
-              language={inputMode}
-              theme="vs-dark"
-              value={inputValue}
-              onChange={(value) => setInputValue(value || "")}
-              options={{
-                minimap: { enabled: false },
-                fontSize: 14,
-              }}
-            />
+            <Suspense fallback={<EditorSkeleton />}>
+              <Editor
+                height="400px"
+                language={inputMode}
+                theme="vs-dark"
+                value={inputValue}
+                onChange={(value) => setInputValue(value || "")}
+                options={{
+                  minimap: { enabled: false },
+                  fontSize: 14,
+                  scrollBeyondLastLine: false,
+                  wordWrap: "on",
+                }}
+              />
+            </Suspense>
           </div>
 
-          {/* Output Panel */}
           <div className="bg-gray-800 rounded-lg p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold">
@@ -175,21 +189,24 @@ function App() {
                 </button>
               </div>
             </div>
-            <Editor
-              height="400px"
-              language={inputMode === "json" ? "plaintext" : "json"}
-              theme="vs-dark"
-              value={outputValue}
-              options={{
-                readOnly: true,
-                minimap: { enabled: false },
-                fontSize: 14,
-              }}
-            />
+            <Suspense fallback={<EditorSkeleton />}>
+              <Editor
+                height="400px"
+                language={inputMode === "json" ? "plaintext" : "json"}
+                theme="vs-dark"
+                value={outputValue}
+                options={{
+                  readOnly: true,
+                  minimap: { enabled: false },
+                  fontSize: 14,
+                  scrollBeyondLastLine: false,
+                  wordWrap: "on",
+                }}
+              />
+            </Suspense>
           </div>
         </div>
 
-        {/* Convert Button */}
         <div className="mt-6 text-center">
           <button
             onClick={handleConvert}
@@ -200,7 +217,6 @@ function App() {
           </button>
         </div>
 
-        {/* Stats Display */}
         {stats && (
           <div className="mt-6 p-6 bg-gray-800 rounded-lg">
             <h3 className="text-xl font-semibold mb-4">Token Analysis</h3>
@@ -229,7 +245,6 @@ function App() {
           </div>
         )}
 
-        {/* Footer */}
         <footer className="mt-12 text-center text-gray-400">
           <p>
             Made by •{" "}
