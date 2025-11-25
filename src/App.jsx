@@ -232,14 +232,14 @@ function App() {
         {/* Footer */}
         <footer className="mt-12 text-center text-gray-400">
           <p>
-            Made with ❤️ for developers working with LLMs •{" "}
+            Made by •{" "}
             <a
               href="https://github.com/devcom33/json-toon-converter"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-400 hover:text-blue-300 underline"
             >
-              Open Source
+              Devcom33
             </a>
           </p>
         </footer>
